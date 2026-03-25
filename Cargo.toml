@@ -1,0 +1,12 @@
+[package]
+name = "torchforge-data"
+version = "0.0.1"
+edition = "2024"
+description = "Zero-copy, streaming DataLoader for edge-native ML pipelines in Rust."
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/torchforge-rs/torchforge-data"
+keywords = ["machine-learning", "dataloader", "edge", "streaming", "rust"]
+categories = ["science", "embedded"]
+
+[dependencies]
