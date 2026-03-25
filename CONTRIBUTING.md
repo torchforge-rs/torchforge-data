@@ -70,3 +70,13 @@ When reporting issues, please include:
 ## License
 
 By contributing, you agree that your contributions will be licensed under the Apache-2.0 license.
+
+### License Header Policy
+
+This project does **not** use per-file SPDX license headers in source files. Instead, licensing information is maintained centrally:
+
+- The project license is specified in the root `LICENSE` file (Apache-2.0 full text)
+- The SPDX identifier `Apache-2.0` is declared in `Cargo.toml`
+- This approach keeps the codebase clean and avoids header maintenance overhead
+
+Contributors should not add license headers to individual source files.

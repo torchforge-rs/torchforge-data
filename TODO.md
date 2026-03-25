@@ -41,7 +41,7 @@
 ### License
 - [x] `LICENSE` — Apache-2.0 full text
 - [x] SPDX identifier `Apache-2.0` in `Cargo.toml`
-- [ ] License header policy: decide whether source files carry per-file SPDX headers (document the decision in `CONTRIBUTING.md`)
+- [x] License header policy: decide whether source files carry per-file SPDX headers (document the decision in `CONTRIBUTING.md`)
 
 ### Governance Documents
 - [x] `CODE_OF_CONDUCT.md` — Contributor Covenant v2.1 (standard, widely recognized)
@@ -65,7 +65,7 @@
 - [x] `.github/PULL_REQUEST_TEMPLATE.md` — checklist: description of change, linked issue, tests added/updated, docs updated, CHANGELOG entry, `cargo clippy` clean
 - [x] `.github/ISSUE_TEMPLATE/bug_report.md` — Rust version, OS, reproduction steps, actual vs. expected behavior
 - [x] `.github/ISSUE_TEMPLATE/feature_request.md` — problem being solved, proposed API sketch, alternatives considered
-- [ ] `.github/ISSUE_TEMPLATE/design_question.md` — for pre-implementation architecture discussion
+- [x] `.github/ISSUE_TEMPLATE/design_question.md` — for pre-implementation architecture discussion
 - [x] `CODEOWNERS` — assign owners to `ARCHITECTURE.md`, `SECURITY.md`, `Cargo.toml` (forces review of critical files)
 
 ### CI — GitHub Actions
@@ -75,13 +75,13 @@
   - `cargo test`
   - `cargo doc --no-deps`
   - Matrix: `[stable, nightly]` × `[ubuntu-latest]` (add macOS/Windows if cross-platform support is intended)
-- [ ] `audit.yml` — runs on push to `main` and on a daily schedule:
+- [x] `audit.yml` — runs on push to `main` and on a daily schedule:
   - `cargo audit` — fail on any RUSTSEC advisory
   - `cargo deny check` (licenses, bans, advisories) — enforces dependency policy
-- [ ] `bench.yml` — manual trigger only (`workflow_dispatch`):
+- [x] `bench.yml` — manual trigger only (`workflow_dispatch`):
   - `cargo bench` — runs criterion benchmarks, uploads results as workflow artifact
   - Not a CI gate (benchmarks are hardware-sensitive); manual when needed
-- [ ] Cache `~/.cargo/registry` and `target/` across workflow runs (standard GHA cargo caching)
+- [x] Cache `~/.cargo/registry` and `target/` across workflow runs (standard GHA cargo caching)
 - [ ] Branch protection on `main`: require all `ci.yml` checks to pass, require at least one review
 
 ### Changelog

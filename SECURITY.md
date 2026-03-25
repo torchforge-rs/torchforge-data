@@ -13,7 +13,7 @@ If you discover a security vulnerability, please report it privately before disc
 
 ### How to Report
 
-- Email: security@torchforge-rs.org
+- Email: security@torchforge-rs.org (coming soon)
 - Include "Security Vulnerability" in the subject line
 - Provide detailed information about the vulnerability
 - Include steps to reproduce if possible
