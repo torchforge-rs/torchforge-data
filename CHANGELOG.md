@@ -8,16 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project setup
-- Repository structure and documentation
+- Phase 0 repository foundation
+- GitHub workflows: CI, security audit, and benchmarking
+- Project governance documents: CODE_OF_CONDUCT, CONTRIBUTING, SECURITY
+- Issue and PR templates for structured community contributions
+- Cargo caching for faster CI runs
+- License header policy: centralized licensing, no per-file headers
+- Dependency security policies via deny.toml
 
 ### Changed
+- Updated Cargo.toml with homepage and badges section
+- Enhanced .gitignore with comprehensive patterns
+
+### Fixed
 
 ### Deprecated
 
 ### Removed
-
-### Fixed
 
 ### Security
 

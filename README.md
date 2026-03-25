@@ -8,6 +8,7 @@ Part of the [torchforge-rs](https://github.com/torchforge-rs) ecosystem.
 [![Docs.rs](https://docs.rs/torchforge-data/badge.svg)](https://docs.rs/torchforge-data)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-2024%20edition-orange.svg)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
+[![CI Status](https://github.com/torchforge-rs/torchforge-data/workflows/CI/badge.svg)](https://github.com/torchforge-rs/torchforge-data/actions)
 
 ---
 
@@ -38,7 +39,9 @@ These are acceptable tradeoffs on a 512GB cloud GPU node. They are **not accepta
 
 ## Status
 
-`v0.0.x` — **Pre-alpha. No stable API. Active design phase.**
+**Pre-alpha - No stable API**
+
+`torchforge-data` is currently in active design phase (`v0.0.x`). The API will change significantly and should not be used in production.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for current design decisions and open questions.
 See [TODO.md](TODO.md) for the implementation roadmap.
@@ -46,6 +49,10 @@ See [TODO.md](TODO.md) for the implementation roadmap.
 ---
 
 ## Planned Usage
+
+> **⚠️ Illustrative API - Will Change**
+> 
+> The following code shows the intended direction of the API. Do not depend on this interface as it will evolve significantly during the design phase.
 
 ```rust
 use torchforge_data::{Dataset, DataLoader, LoaderConfig};
@@ -66,11 +73,14 @@ for batch in loader {
 }
 ```
 
-> **Note:** This API is illustrative. It will change. Do not depend on it.
-
 ---
 
 ## Contributing
+
+We welcome contributions! Please see our contributing guidelines:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute, development setup, and PR process
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Our community standards
 
 This project is in active early design. The most valuable contributions right now are:
 

@@ -85,29 +85,29 @@
 - [ ] Branch protection on `main`: require all `ci.yml` checks to pass, require at least one review
 
 ### Changelog
-- [ ] `CHANGELOG.md` — initialized per [Keep a Changelog](https://keepachangelog.com/) format:
+- [x] `CHANGELOG.md` — initialized per [Keep a Changelog](https://keepachangelog.com/) format:
   ```
   # Changelog
   All notable changes to this project will be documented in this file.
   ...
   ## [Unreleased]
   ```
-- [ ] Document the policy: every PR that changes behavior, adds a feature, or fixes a bug requires a CHANGELOG entry under `[Unreleased]`
-- [ ] On release: `[Unreleased]` becomes `[x.y.z] — YYYY-MM-DD`, a new empty `[Unreleased]` is added
+- [x] Document the policy: every PR that changes behavior, adds a feature, or fixes a bug requires a CHANGELOG entry under `[Unreleased]`
+- [x] On release: `[Unreleased]` becomes `[x.y.z] — YYYY-MM-DD`, a new empty `[Unreleased]` is added
 
 ### Supply Chain
-- [ ] `deny.toml` for `cargo deny`:
+- [x] `deny.toml` for `cargo deny`:
   - Licenses: allowlist `Apache-2.0`, `MIT`, `MIT-0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `Unicode-DFS-2016`; deny everything else
   - Bans: deny duplicate versions of the same crate where avoidable
   - Advisories: mirror `cargo audit` — deny all known vulnerabilities
-- [ ] `rust-toolchain.toml` pinning `stable` channel (ensures reproducible builds across contributors and CI)
+- [x] `rust-toolchain.toml` pinning `stable` channel (ensures reproducible builds across contributors and CI)
 
 ### README Polish
-- [ ] Badges rendering correctly: crates.io version, docs.rs, license, CI status
-- [ ] "Why" section grounded in verifiable data (already present — verify links are live)
-- [ ] "Status" section clearly states pre-alpha, no stable API
-- [ ] "Planned Usage" clearly marked illustrative/unstable
-- [ ] Link to `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`
+- [x] Badges rendering correctly: crates.io version, docs.rs, license, CI status
+- [x] "Why" section grounded in verifiable data (already present — verify links are live)
+- [x] "Status" section clearly states pre-alpha, no stable API
+- [x] "Planned Usage" clearly marked illustrative/unstable
+- [x] Link to `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`
 
 ---
 

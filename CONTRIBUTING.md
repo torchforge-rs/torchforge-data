@@ -67,6 +67,56 @@ When reporting issues, please include:
 - Expected vs actual behavior
 - Any relevant logs or error messages
 
+## Changelog Policy
+
+All changes that affect user-facing behavior must be documented in `CHANGELOG.md`.
+
+### When to Add Entries
+
+Every pull request that meets any of these criteria requires a CHANGELOG entry under the `[Unreleased]` section:
+
+- **Features**: New functionality or capabilities
+- **Bug fixes**: Resolved issues that affected users
+- **Breaking changes**: API modifications that break existing code
+- **Deprecations**: Features that will be removed in future releases
+- **Security**: Vulnerability fixes or security improvements
+
+### Entry Format
+
+Entries should follow this format:
+```
+### Category
+- Brief description of the change
+```
+
+Categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+### Release Process
+
+When making a release:
+1. Move all `[Unreleased]` entries to a new version section: `[x.y.z] — YYYY-MM-DD`
+2. Create a new empty `[Unreleased]` section
+3. Update the comparison links at the bottom
+
+### Examples
+
+Good:
+```
+### Added
+- Streaming data loader with zero-copy optimization
+- Support for custom data transforms
+
+### Fixed
+- Memory leak in batch processing
+- Panic on empty dataset
+```
+
+Bad:
+```
+### Added
+- Fixed some bugs and added stuff
+```
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the Apache-2.0 license.
