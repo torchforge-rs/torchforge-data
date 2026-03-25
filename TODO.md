@@ -13,7 +13,7 @@
 **Goal**: Establish the repository as a credible, contribution-ready OSS project before any functional code ships. These items are prerequisites for v0.1.0 — nothing is merged to `main` until Phase 0 is complete.
 
 ### Repository Structure
-- [ ] Initialize repository with standard layout:
+- [x] Initialize repository with standard layout:
   ```
   .github/
     workflows/
@@ -33,19 +33,19 @@
   SECURITY.md
   TODO.md
   ```
-- [ ] `Cargo.toml` with correct metadata: `name`, `version = "0.0.1"`, `edition = "2024"`, `rust-version = "1.85"`, `license = "Apache-2.0"`, `repository`, `homepage`, `description`, `keywords`, `categories`
-- [ ] `Cargo.toml` `[badges]` section: crates.io version, docs.rs, license
-- [ ] `.gitignore` (standard Rust + editor artifacts)
+- [x] `Cargo.toml` with correct metadata: `name`, `version = "0.0.1"`, `edition = "2024"`, `rust-version = "1.85"`, `license = "Apache-2.0"`, `repository`, `homepage`, `description`, `keywords`, `categories`
+- [x] `Cargo.toml` `[badges]` section: crates.io version, docs.rs, license
+- [x] `.gitignore` (standard Rust + editor artifacts)
 - [ ] `.cargo/config.toml` if any workspace-level flags are needed (e.g., target-specific linker flags)
 
 ### License
-- [ ] `LICENSE` — Apache-2.0 full text
-- [ ] SPDX identifier `Apache-2.0` in `Cargo.toml`
+- [x] `LICENSE` — Apache-2.0 full text
+- [x] SPDX identifier `Apache-2.0` in `Cargo.toml`
 - [ ] License header policy: decide whether source files carry per-file SPDX headers (document the decision in `CONTRIBUTING.md`)
 
 ### Governance Documents
-- [ ] `CODE_OF_CONDUCT.md` — Contributor Covenant v2.1 (standard, widely recognized)
-- [ ] `CONTRIBUTING.md` — must cover:
+- [x] `CODE_OF_CONDUCT.md` — Contributor Covenant v2.1 (standard, widely recognized)
+- [x] `CONTRIBUTING.md` — must cover:
   - Prerequisites (Rust version, `cargo` toolchain, `protoc` if needed)
   - How to build and run tests locally
   - Branching model (`main` is always release-ready; feature branches via PR)
@@ -54,7 +54,7 @@
   - Code style: `cargo fmt` enforced, `cargo clippy -- -D warnings` must pass
   - What "ready to merge" means (all CI green, docs on all public items, CHANGELOG entry)
   - How to report a bug vs. propose a design change (issue templates)
-- [ ] `SECURITY.md` — must cover:
+- [x] `SECURITY.md` — must cover:
   - Supported versions (currently: latest `v0.x` only, no backports)
   - How to report a vulnerability (private channel: GitHub Security Advisories or email)
   - Response SLA commitment (e.g., acknowledge within 72 hours, triage within 7 days)
@@ -62,14 +62,14 @@
   - What is out of scope (theoretical only, requires physical device access, etc.)
 
 ### GitHub Templates
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — checklist: description of change, linked issue, tests added/updated, docs updated, CHANGELOG entry, `cargo clippy` clean
-- [ ] `.github/ISSUE_TEMPLATE/bug_report.md` — Rust version, OS, reproduction steps, actual vs. expected behavior
-- [ ] `.github/ISSUE_TEMPLATE/feature_request.md` — problem being solved, proposed API sketch, alternatives considered
+- [x] `.github/PULL_REQUEST_TEMPLATE.md` — checklist: description of change, linked issue, tests added/updated, docs updated, CHANGELOG entry, `cargo clippy` clean
+- [x] `.github/ISSUE_TEMPLATE/bug_report.md` — Rust version, OS, reproduction steps, actual vs. expected behavior
+- [x] `.github/ISSUE_TEMPLATE/feature_request.md` — problem being solved, proposed API sketch, alternatives considered
 - [ ] `.github/ISSUE_TEMPLATE/design_question.md` — for pre-implementation architecture discussion
-- [ ] `CODEOWNERS` — assign owners to `ARCHITECTURE.md`, `SECURITY.md`, `Cargo.toml` (forces review of critical files)
+- [x] `CODEOWNERS` — assign owners to `ARCHITECTURE.md`, `SECURITY.md`, `Cargo.toml` (forces review of critical files)
 
 ### CI — GitHub Actions
-- [ ] `ci.yml` — runs on every push and PR to `main`:
+- [x] `ci.yml` — runs on every push and PR to `main`:
   - `cargo fmt --check`
   - `cargo clippy -- -D warnings`
   - `cargo test`
