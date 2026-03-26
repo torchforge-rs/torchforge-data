@@ -5,6 +5,10 @@
 > Items marked `[RESEARCH]` require benchmarking or prototyping before implementation.
 > Items marked `[DECISION]` are blocked on an architectural choice documented in [ARCHITECTURE.md](ARCHITECTURE.md).
 > Items marked `[BLOCKED]` depend on another item being completed first.
+>
+> **Changelog**:
+> - `2026-03-26` — Added FDRL forward-compatibility constraints to `ReplayBuffer` items; added `## v1.x — torchforge-federated Foundation` section.
+> - `2026-03-26 (v2)` — Reviewed against project knowledge section 13 (Rust ML ecosystem position). No substantive TODO changes required — NN backend choice is a torchforge-bench concern. `Transition: Send + Sync` constraint (added in v1) remains the data layer's interface commitment to the burn-backed training loop.
 
 ---
 
@@ -141,6 +145,7 @@
 - [ ] Uniform random sampling
 - [ ] `push()` and `sample()` API
 - [ ] `len()`, `capacity()`, `is_ready(min_samples)` helpers
+- [ ] *(added 2026-03-26)* `Transition` type fields must be plain, owned, serialization-friendly data — no `Rc`, raw pointers, or non-`Send` types; enforced by `Transition: Send + Sync` bound. Required for FDRL forward compatibility (see ARCHITECTURE.md `## FDRL Design Considerations`).
 
 ### MmapDataset
 - [ ] `MmapDataset` backed by `memmap2`
@@ -205,7 +210,7 @@
 
 **Goal**: Read datasets produced by Python tooling. Enable hybrid Python-train / Rust-serve workflows.
 
-- [ ] `[DECISION]` File format decision: raw binary vs. Arrow IPC vs. custom
+- [ ] `[DECISION]` File format decision: raw binary vs. Arrow IPC vs. custom — evaluate extensibility to gradient checkpoint representation for FDRL forward compatibility (see ARCHITECTURE.md `## FDRL Design Considerations`)
 - [ ] Reader for chosen format
 - [ ] Writer for chosen format (to generate test fixtures from Python)
 - [ ] Validation tooling: verify written files are readable without corruption
@@ -231,6 +236,28 @@
 - [ ] At least one real RL training loop using `torchforge-data` end-to-end
 - [ ] Zero known soundness issues
 - [ ] MSRV (Minimum Supported Rust Version) declared and tested in CI
+- [ ] `Transition: Send + Sync` bound verified — FDRL forward compatibility confirmed
+
+---
+
+## v1.x — torchforge-federated Foundation *(added 2026-03-26)*
+
+**This section is not an implementation target for this crate.** It documents the interface commitments torchforge-data makes at v1.0.0 that torchforge-federated (the FDRL crate) will depend on.
+
+torchforge-federated will implement:
+- Gradient aggregation (FedAvg baseline)
+- Communication protocol across edge device fleet
+- Differential privacy (gradient noise — open)
+- Heterogeneous device support
+
+torchforge-data's role at v1.x:
+- Provide the per-device `ReplayBuffer` that each federated agent trains against
+- The buffer interface must be stable enough that torchforge-federated can depend on it without a breaking change
+- The file format chosen at v0.4.0 must be evaluable for gradient checkpoint use — not a requirement, but a consideration
+
+**No torchforge-federated code lives in this crate. The boundary is the `ReplayBuffer` API.**
+
+See project knowledge section 12 (FDRL — Edge Vertical) for full context.
 
 ---
 

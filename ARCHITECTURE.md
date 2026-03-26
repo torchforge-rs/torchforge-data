@@ -1,6 +1,10 @@
 # Architecture
 
 > This document captures current design decisions, their justifications, and — explicitly — what remains unknown or unresolved. It is a living document. Decisions marked `[OPEN]` are not yet settled.
+>
+> **Changelog**:
+> - `2026-03-26` — Added FDRL design considerations to `ReplayBuffer`, new `## FDRL Design Considerations` section, and updated `## Out of Scope` to reflect v1.x federation target.
+> - `2026-03-26 (v2)` — Added `## Rust ML Ecosystem Context` note from project knowledge section 13; updated `## Out of Scope` GPU entry with ecosystem grounding.
 
 ---
 
@@ -90,6 +94,15 @@ pub struct ReplayBuffer<S, A, R> {
 
 This is a **genuine open research question** for the on-device RL case. We will prototype and benchmark all three before deciding.
 
+<!-- v2: 2026-03-26 — FDRL federation boundary consideration -->
+**FDRL federation boundary** *(added 2026-03-26)*: In the federated RL use case (torchforge-federated, v1.x), each edge device runs a local `ReplayBuffer` and trains a local policy. What gets shared with the federation coordinator is **gradient updates**, not raw experience tuples. This distinction has concrete implications for v0.x design:
+
+- The `ReplayBuffer` API must not assume it is the only consumer of experience data. A future `GradientBuffer` or federation adapter will sit alongside it, not replace it.
+- The `Transition` type must remain serialization-friendly. Avoid embedding non-serializable types (e.g., raw pointers, `Rc`) in `Transition` fields.
+- Capacity and memory layout decisions made at v0.2.0 should be evaluated against the federation scenario: in FDRL, buffer capacity per device is bounded by that device's RAM, not by an aggregate fleet budget.
+
+These are forward compatibility constraints, not v0.x implementation tasks. No FDRL code ships before v1.x. But the buffer interface designed at v0.1.0–v0.2.0 must not require a breaking change to accommodate federation at v1.x.
+
 ---
 
 ### `Sampler` trait
@@ -155,10 +168,53 @@ These are not gaps to paper over. They are the research questions this project e
 
 ---
 
+<!-- v2: 2026-03-26 — FDRL section added -->
+## FDRL Design Considerations *(added 2026-03-26)*
+
+Federated Deep Reinforcement Learning (FDRL) is the v1.x target for the torchforge ecosystem. Each edge device trains a local DRL agent on its own environment data; only gradient updates — not raw experience tuples — are shared with a coordination layer. A global policy is aggregated (FedAvg baseline) and pushed back to devices.
+
+This section captures how the v0.x data layer design must account for that future, without implementing it prematurely.
+
+**What FDRL requires from torchforge-data at v1.x:**
+- A `ReplayBuffer` API that a federation adapter can sit alongside without requiring a rewrite
+- `Transition` types that are serialization-friendly (no non-serializable fields)
+- Clear separation between local experience storage (this crate) and gradient communication (torchforge-federated, v1.x)
+- Memory layout decisions that hold under per-device RAM constraints, not aggregate fleet budgets
+
+**What this means for v0.x decisions:**
+- Do not embed non-serializable types in `Transition`. Use owned, plain-data fields.
+- Keep the `ReplayBuffer` interface narrow and side-effect-free — a future gradient-extraction step needs to compose with it, not wrap it
+- File format decision (v0.4.0) should consider whether the chosen format can represent gradient checkpoints, not just raw experience tuples — this informs the decision between raw binary and Arrow IPC
+
+**What FDRL does NOT require from v0.x:**
+- No federation protocol code
+- No gradient serialization
+- No network communication
+- No multi-device coordination
+
+The federated crate (torchforge-federated) is a v1.x milestone. The data layer built at v0.x is the foundation it runs on. The constraint is interface compatibility, not implementation.
+
+**Historical grounding**: FDRL is an established academic term (IEEE DySPAN 2021, arXiv 2412.12543, arXiv 2505.12153). No production Rust tooling for FDRL exists as of March 2026. torchforge-federated will be the first.
+
+---
+
+## Rust ML Ecosystem Context *(added 2026-03-26)*
+
+Project knowledge section 13 establishes where torchforge sits in the Rust ML stack. Reproduced here for orientation — the data layer does not choose a neural network backend, but its design must be compatible with the framework that does.
+
+- `burn` — Native Rust framework. No C++ dependency. Modular backends: `ndarray`, `wgpu`, `candle`, CUDA. **The training framework** torchforge builds on for on-device RL.
+- `candle` — HuggingFace. Best for inference + LLMs. Not the primary training target.
+- `tch-rs` — ~800MB libtorch. Explicitly excluded — not viable for edge.
+- `torchforge` — **builds ON TOP of burn/candle** for the edge RL training use case.
+
+**Implication for this crate**: torchforge-data provides the data pipeline that feeds a `burn`-backed training loop. The `Transition` type and `ReplayBuffer` API must be compatible with how `burn`'s tensor operations consume batched data. No burn dependency in this crate — the interface boundary is raw slices and owned data. The compatibility requirement is semantic, not a crate dependency.
+
+---
+
 ## Out of Scope (v0.x)
 
-- GPU-side data loading / CUDA pinned memory
-- Distributed data loading across multiple devices
+- GPU-side data loading / CUDA pinned memory — `burn` supports CUDA and `wgpu` backends; if GPU-side loading becomes relevant at v1.x, the interface boundary is a `burn` tensor, not a raw slice. Design deferred.
+- Distributed data loading across multiple devices — *deferred to v1.x as torchforge-federated (FDRL); explicitly not forgotten, see `## FDRL Design Considerations`*
 - Video / audio streaming pipelines
 - Python interop / PyO3 bindings
 
