@@ -24,19 +24,19 @@ jobs:
     - uses: actions/checkout@v4
       with:
         ref: ${{ github.event.inputs.branch || 'main' }}
-    
+
     - uses: dtolnay/rust-toolchain@stable
       with:
         components: rustc, cargo, llvm-tools-preview
-    
+
     - name: Install cargo-criterion
       run: cargo install cargo-criterion
-    
+
     - name: Run benchmarks
       run: |
         ITERATIONS=${{ github.event.inputs.iterations || '10' }}
         cargo bench -- --sample-size $ITERATIONS
-    
+
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
@@ -45,7 +45,7 @@ jobs:
           target/criterion/
           **/target/criterion/
         retention-days: 30
-    
+
     - name: Generate benchmark summary
       run: |
         if [ -d "target/criterion" ]; then
@@ -54,7 +54,7 @@ jobs:
           echo "Benchmark results for branch: ${{ github.event.inputs.branch || 'main' }}" >> benchmark-summary.md
           echo "Iterations: ${{ github.event.inputs.iterations || '10' }}" >> benchmark-summary.md
           echo "" >> benchmark-summary.md
-          
+
           # List all benchmark reports
           find target/criterion -name "report" -type d | while read dir; do
             bench_name=$(echo "$dir" | sed 's|.*target/criterion/||' | sed 's|/report||')
@@ -62,12 +62,12 @@ jobs:
             echo "Report available in artifact: \`benchmark-results-${{ github.sha }}\`" >> benchmark-summary.md
             echo "" >> benchmark-summary.md
           done
-          
+
           cat benchmark-summary.md
         else
           echo "No benchmark results found"
         fi
-    
+
     - name: Post benchmark summary
       if: always()
       run: |
