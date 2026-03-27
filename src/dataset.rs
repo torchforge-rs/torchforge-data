@@ -20,8 +20,8 @@ pub trait Dataset {
     fn len(&self) -> Result<usize>;
 
     /// Returns true if the dataset is empty
-    fn is_empty(&self) -> bool {
-        self.len().map(|l| l == 0).unwrap_or(true)
+    fn is_empty(&self) -> Result<bool> {
+        self.len().map(|l| l == 0)
     }
 
     /// Returns the item at the given index
@@ -97,6 +97,14 @@ impl MmapDataset {
 
         // For now, assume fixed item size - this will be made configurable
         let item_size = 4; // Placeholder
+
+        // Validate item_size to prevent division by zero
+        if item_size == 0 {
+            return Err(DataError::Config(
+                "item_size must be greater than 0".to_string(),
+            ));
+        }
+
         let len = mmap.len() / item_size;
 
         Ok(Self {
@@ -125,8 +133,15 @@ impl Dataset for MmapDataset {
             )));
         }
 
-        let start = index * self.item_size;
-        let end = start + self.item_size;
+        // Use checked arithmetic to prevent overflow
+        let start = index.checked_mul(self.item_size).ok_or_else(|| {
+            DataError::Format(
+                "Index overflow - multiplication would exceed usize bounds".to_string(),
+            )
+        })?;
+        let end = start.checked_add(self.item_size).ok_or_else(|| {
+            DataError::Format("Index overflow - addition would exceed usize bounds".to_string())
+        })?;
 
         if end > self.data.len() {
             return Err(DataError::Format(

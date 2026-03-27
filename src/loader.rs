@@ -40,7 +40,12 @@ impl LoaderConfig {
     }
 
     /// Sets the batch size
+    ///
+    /// # Panics
+    ///
+    /// Panics if batch_size is 0
     pub fn batch_size(mut self, batch_size: usize) -> Self {
+        assert!(batch_size > 0, "batch_size must be greater than 0");
         self.batch_size = batch_size;
         self
     }
@@ -117,16 +122,25 @@ impl<D: Dataset, S: Sampler> DataLoader<D, S> {
     }
 
     /// Returns an iterator over batches
-    pub fn iter(&self) -> DataLoaderIter<'_, D, S> {
-        DataLoaderIter {
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the dataset length cannot be determined
+    pub fn iter(&self) -> Result<DataLoaderIter<'_, D, S>> {
+        let len = self.dataset.len()?;
+        Ok(DataLoaderIter {
             loader: self,
-            sampler_iter: self.sampler.iter(self.dataset.len().unwrap_or(0)),
+            sampler_iter: self.sampler.iter(len),
             current_batch: Vec::with_capacity(self.config.batch_size),
-        }
+        })
     }
 }
 
 /// Iterator over data batches
+///
+/// **Note**: If an error occurs while accessing dataset items during batch construction,
+/// the entire batch is discarded and the error is returned immediately. Partial batches
+/// are not preserved in error conditions.
 pub struct DataLoaderIter<'a, D: Dataset, S: Sampler> {
     /// Reference to the data loader
     loader: &'a DataLoader<D, S>,

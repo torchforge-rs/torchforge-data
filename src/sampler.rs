@@ -28,6 +28,10 @@ pub trait Sampler {
 /// Uniform random sampler
 ///
 /// Samples items uniformly at random without replacement for each epoch.
+///
+/// **Note**: This implementation uses a simple deterministic Linear Congruential Generator (LCG)
+/// for reproducibility. It is NOT suitable for cryptographic purposes or applications requiring
+/// high-quality randomness. For production use with proper randomness, consider using the `rand` crate.
 #[derive(Debug, Clone)]
 pub struct UniformSampler {
     /// Random number generator seed
