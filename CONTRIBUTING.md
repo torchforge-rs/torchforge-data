@@ -8,15 +8,42 @@ Thank you for your interest in contributing to Torchforge Data! This document pr
 
 - Rust 1.85 or higher
 - Git
+- Python 3.8+ (for pre-commit hooks)
 
 ### Setup
 
 1. Fork the repository
 2. Clone your fork locally
-3. Create a new branch for your feature or bug fix
-4. Make your changes
-5. Ensure all tests pass
-6. Submit a pull request
+3. Install pre-commit hooks:
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
+4. Create a new branch for your feature or bug fix
+5. Make your changes
+6. Ensure all tests pass
+7. Submit a pull request
+
+### Pre-commit Hooks
+
+This project uses pre-commit hooks to ensure code quality. The hooks run automatically before each commit and check for:
+
+- **Code formatting** with `rustfmt`
+- **Linting** with `clippy` (warnings as errors)
+- **Basic compilation** with `cargo check`
+- **Running tests** with `cargo test`
+- **Security audit** with `cargo audit`
+- **Dependency checks** with `cargo deny`
+
+To run all hooks manually:
+```bash
+pre-commit run --all-files
+```
+
+To skip hooks (not recommended):
+```bash
+git commit --no-verify
+```
 
 ## Development Workflow
 

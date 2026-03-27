@@ -86,6 +86,7 @@
   - `cargo bench` — runs criterion benchmarks, uploads results as workflow artifact
   - Not a CI gate (benchmarks are hardware-sensitive); manual when needed
 - [x] Cache `~/.cargo/registry` and `target/` across workflow runs (standard GHA cargo caching)
+- [x] Pre-commit hooks configuration for local development quality checks
 - [ ] Branch protection on `main`: require all `ci.yml` checks to pass, require at least one review
 
 ### Changelog
