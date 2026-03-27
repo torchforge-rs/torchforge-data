@@ -135,9 +135,9 @@
 - [x] `RandomSampler` (without replacement)
 
 ### DataLoader
-- [ ] `DataLoader<D, S>` struct generic over `Dataset` + `Sampler`
-- [ ] Sequential iteration (no parallelism yet)
-- [ ] Batch collation for primitive types (`f32`, `i64` arrays)
+- [x] `DataLoader<D, S>` struct generic over `Dataset` + `Sampler`
+- [x] Sequential iteration (no parallelism yet)
+- [x] Batch collation for primitive types (`f32`, `i64` arrays)
 - [ ] `[RESEARCH]` Verify `rayon`-based parallel item loading degrades gracefully on single-core targets before enabling
 
 ### ReplayBuffer
