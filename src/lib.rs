@@ -9,3 +9,16 @@
 //! ## Status
 //!
 //! Active development. API is not yet stable.
+
+#![deny(missing_docs)]
+
+pub mod dataset;
+pub mod error;
+pub mod loader;
+pub mod sampler;
+
+// Re-export main types for convenience
+pub use dataset::Dataset;
+pub use error::{DataError, Result};
+pub use loader::{DataLoader, LoaderConfig};
+pub use sampler::Sampler;

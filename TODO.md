@@ -121,18 +121,18 @@
 **Goal**: Minimal working `Dataset` + `DataLoader` + `ReplayBuffer`. Enough to run a basic DQN training loop on a toy environment.
 
 ### Infrastructure (do these first)
-- [ ] `#![deny(missing_docs)]` enforced from v0.1.0 — all public items documented as they are written
-- [ ] `proptest` in `[dev-dependencies]` for property-based testing
-- [ ] `criterion` in `[dev-dependencies]` for micro-benchmarks, create `benches/` directory
+- [x] `#![deny(missing_docs)]` enforced from v0.1.0 — all public items documented as they are written
+- [x] `proptest` in `[dev-dependencies]` for property-based testing
+- [x] `criterion` in `[dev-dependencies]` for micro-benchmarks, create `benches/` directory
 - [ ] `cargo-fuzz` target for `MmapDataset` file parsing (malformed files, truncated files, corrupt index)
 
 ### Traits & Core Types
-- [ ] Define `Dataset` trait with GAT-based `Item<'a>` for zero-copy returns
-- [ ] Define `Sampler` trait with iterator-based return type
-- [ ] Define `LoaderConfig` struct with builder pattern
-- [ ] Define error types via `thiserror`
+- [x] Define `Dataset` trait with GAT-based `Item<'a>` for zero-copy returns
+- [x] Define `Sampler` trait with iterator-based return type
+- [x] Define `LoaderConfig` struct with builder pattern
+- [x] Define error types via `thiserror`
 - [ ] `SequentialSampler`
-- [ ] `RandomSampler` (without replacement)
+- [x] `RandomSampler` (without replacement)
 
 ### DataLoader
 - [ ] `DataLoader<D, S>` struct generic over `Dataset` + `Sampler`
