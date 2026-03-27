@@ -32,11 +32,7 @@ pub trait Dataset {
     where
         Self: Sized,
     {
-        DatasetIter {
-            dataset: self,
-            index: 0,
-            len: self.len().unwrap_or(0),
-        }
+        DatasetIter { dataset: self, index: 0, len: self.len().unwrap_or(0) }
     }
 }
 
@@ -100,18 +96,12 @@ impl MmapDataset {
 
         // Validate item_size to prevent division by zero
         if item_size == 0 {
-            return Err(DataError::Config(
-                "item_size must be greater than 0".to_string(),
-            ));
+            return Err(DataError::Config("item_size must be greater than 0".to_string()));
         }
 
         let len = mmap.len() / item_size;
 
-        Ok(Self {
-            data: mmap,
-            item_size,
-            len,
-        })
+        Ok(Self { data: mmap, item_size, len })
     }
 }
 

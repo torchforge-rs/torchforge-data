@@ -24,12 +24,7 @@ pub struct LoaderConfig {
 
 impl Default for LoaderConfig {
     fn default() -> Self {
-        Self {
-            batch_size: 32,
-            shuffle: true,
-            prefetch: 2,
-            seed: 42,
-        }
+        Self { batch_size: 32, shuffle: true, prefetch: 2, seed: 42 }
     }
 }
 
@@ -97,11 +92,7 @@ impl<D: Dataset> DataLoader<D, UniformSampler> {
             UniformSampler::new(0)
         };
 
-        Ok(Self {
-            dataset,
-            sampler,
-            config,
-        })
+        Ok(Self { dataset, sampler, config })
     }
 }
 
@@ -114,11 +105,7 @@ impl<D: Dataset, S: Sampler> DataLoader<D, S> {
     /// * `sampler` - The sampler to use
     /// * `config` - Configuration for loading
     pub fn with_sampler(dataset: D, sampler: S, config: LoaderConfig) -> Self {
-        Self {
-            dataset,
-            sampler,
-            config,
-        }
+        Self { dataset, sampler, config }
     }
 
     /// Returns an iterator over batches
@@ -286,9 +273,8 @@ where
             // Convert bytes to f32
             let chunks = slice.chunks_exact(4);
             for chunk in chunks {
-                let bytes: [u8; 4] = chunk
-                    .try_into()
-                    .expect("chunks_exact guarantees correct size");
+                let bytes: [u8; 4] =
+                    chunk.try_into().expect("chunks_exact guarantees correct size");
                 let value = f32::from_le_bytes(bytes);
                 result.push(value);
             }
@@ -362,9 +348,8 @@ where
             // Convert bytes to i64
             let chunks = slice.chunks_exact(8);
             for chunk in chunks {
-                let bytes: [u8; 8] = chunk
-                    .try_into()
-                    .expect("chunks_exact guarantees correct size");
+                let bytes: [u8; 8] =
+                    chunk.try_into().expect("chunks_exact guarantees correct size");
                 let value = i64::from_le_bytes(bytes);
                 result.push(value);
             }

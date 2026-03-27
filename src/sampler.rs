@@ -79,10 +79,7 @@ impl UniformSamplerIter {
             indices.swap(i, j);
         }
 
-        Self {
-            indices,
-            position: 0,
-        }
+        Self { indices, position: 0 }
     }
 }
 
