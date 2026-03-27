@@ -1,8 +1,3 @@
-# This template contains all of the possible sections and their default values
-
-# Note that all sections that take flags are not mandatory (as of version 1.0.0).
-# Uncomment each section to enable that feature.
-
 [graph]
 # Graph targets to include when checking
 targets = [
@@ -17,61 +12,26 @@ targets = [
 db-path = "~/.cargo/advisory-db"
 # The url(s) of the advisory database to use
 db-urls = ["https://github.com/rustsec/advisory-db"]
-# The lint level for security vulnerabilities
-vulnerability = "deny"
-# The lint level for unmaintained crates
-unmaintained = "warn"
-# The lint level for crates that have been yanked from their source registry
-yanked = "warn"
-# The lint level for crates with security notices. Note that as of
-# 2019-12-17 there are no security notice advisories in
-# https://github.com/rustsec/advisory-db
-notice = "warn"
-# A list of advisory IDs to ignore. Note that ignored advisories will still
-# output a note when they are encountered.
+# A list of advisory IDs to ignore
 ignore = [
     #"RUSTSEC-0000-0000",
 ]
 
 [licenses]
 # List of explicitly allowed licenses
-# See https://spdx.org/licenses/ for list of possible licenses
-# [possible values: any SPDX 3.11 short identifier (+ optional exception)]
 allow = [
     "Apache-2.0",
     "MIT",
-    "MIT-0",
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
     "Unicode-DFS-2016",
+    "Unicode-3.0",
 ]
-# List of explicitly disallowed licenses
-# See https://spdx.org/licenses/ for list of possible licenses
-# [possible values: any SPDX 3.11 short identifier (+ optional exception)]
-deny = [
-    #"GPL-2.0",
-    #"GPL-3.0",
-]
-# Lint level for licenses considered copyleft
-copyleft = "warn"
-# Blanket approval or denial for OSI-approved or FSF-Free licenses
-# [possible values: any of "allow", "deny", "warn"]
-osi-approved = "allow"
-fsf-free = "allow"
-# Lint level for licenses that have been retired
-# [possible values: any of "allow", "deny", "warn"]
-retired = "warn"
-# The lint level for licenses that are considered "uncurable"
-# [possible values: any of "allow", "deny", "warn"]
-uncurable = "warn"
 # The confidence threshold for license detection
-# [possible values: any between 0.0 and 1.0]
 confidence-threshold = 0.8
-# Allow 1 or more licenses on a per-crate basis, so that particular licenses
-# aren't accepted for every possible crate as with the normal allow list
+# Allow 1 or more licenses on a per-crate basis
 exceptions = [
-    # Each entry is the crate and version constraint, and its specific license
     #{ name = "zstd-sys", version = "*", allow = ["MIT"] },
 ]
 
@@ -80,45 +40,31 @@ exceptions = [
 multiple-versions = "warn"
 # Lint level for when a crate version requirement is `*`
 wildcards = "allow"
-# The graph highlighting used when creating dotgraphs for crates
-# with multiple versions
-# * lowest-version - The path to the lowest version (duplicate nodes unless needed)
-# * simplest-path - The simplest path from the root to the version
-# * smallest-path - The path with the fewest edges to the version
-# * all-paths - All multiple paths to the version
-highlight = "all-paths"
-# List of crates that are allowed. Use with care!
+# The graph highlighting used when creating dotgraphs
+highlight = "all"
+# List of crates that are allowed
 allow = [
     #{ name = "ansi_term", version = "=0.11.0" },
 ]
 # List of crates to deny
 deny = [
-    # Each entry the name of a crate and a version range. If version is
-    # not specified, all versions will be matched.
     #{ name = "ansi_term", version = "=0.11.0" },
 ]
-# Certain crates/versions that will be skipped when doing duplicate detection.
+# Crates to skip during duplicate detection
 skip = [
     #{ name = "ansi_term", version = "=0.11.0" },
 ]
-# Similarly to `skip` allows you to skip certain crates during duplicate
-# detection. Unlike `skip`, `skip-tree` skips the entire crate tree, including
-# all dependencies of the matched crate.
+# Skip entire crate tree
 skip-tree = [
-    #{ name = "ansi_term", version = "=0.11.0", skip = [
-    #    { name = "redox_syscall" },
-    #] },
+    #{ name = "ansi_term", version = "=0.11.0" },
 ]
 
 [sources]
-# Lint level for what to happen when a crate from a crate registry that is
-# not in the allow list is encountered
+# Lint level for crates from unknown registries
 unknown-registry = "warn"
-# Lint level for what to happen when a crate from a git repository that is not in
-# the allow list is encountered
+# Lint level for crates from unknown git repositories
 unknown-git = "warn"
-# List of URLs for allowed crate registries. Defaults to the crates.io index
-# if not specified. If it is specified but empty, no registries are allowed.
+# List of allowed crate registries
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# List of URLs for allowed git repositories
+# List of allowed git repositories
 allow-git = []
