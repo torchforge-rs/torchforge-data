@@ -3,7 +3,7 @@
 //! Run with: `cargo bench`
 //! View results: `open target/criterion/report/index.html`
 
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn simple_benchmark(c: &mut Criterion) {
     c.bench_function("simple_operation", |b| {
