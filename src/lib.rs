@@ -20,5 +20,5 @@ pub mod sampler;
 // Re-export main types for convenience
 pub use dataset::{Dataset, MmapDataset};
 pub use error::{DataError, Result};
-pub use loader::{Collate, DataLoader, LoaderConfig};
+pub use loader::{DataLoader, LoaderConfig};
 pub use sampler::{Sampler, SequentialSampler};
