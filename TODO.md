@@ -131,7 +131,7 @@
 - [x] Define `Sampler` trait with iterator-based return type
 - [x] Define `LoaderConfig` struct with builder pattern
 - [x] Define error types via `thiserror`
-- [ ] `SequentialSampler`
+- [x] `SequentialSampler`
 - [x] `RandomSampler` (without replacement)
 
 ### DataLoader

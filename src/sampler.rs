@@ -102,3 +102,68 @@ impl Iterator for UniformSamplerIter {
 }
 
 impl ExactSizeIterator for UniformSamplerIter {}
+
+/// Sequential sampler
+///
+/// Samples items in sequential order from 0 to len-1.
+/// This is the simplest sampling strategy, useful for deterministic
+/// data processing and debugging.
+#[derive(Debug, Clone, Copy)]
+pub struct SequentialSampler;
+
+impl SequentialSampler {
+    /// Creates a new sequential sampler
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+impl Default for SequentialSampler {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Sampler for SequentialSampler {
+    type Iter<'a> = SequentialSamplerIter;
+
+    fn iter(&self, len: usize) -> Self::Iter<'_> {
+        SequentialSamplerIter::new(len)
+    }
+}
+
+/// Iterator for sequential sampling
+pub struct SequentialSamplerIter {
+    /// Current index
+    current: usize,
+    /// Total length
+    len: usize,
+}
+
+impl SequentialSamplerIter {
+    /// Creates a new sequential sampler iterator
+    fn new(len: usize) -> Self {
+        Self { current: 0, len }
+    }
+}
+
+impl Iterator for SequentialSamplerIter {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.len {
+            let index = self.current;
+            self.current += 1;
+            Some(index)
+        } else {
+            None
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let remaining = self.len.saturating_sub(self.current);
+        (remaining, Some(remaining))
+    }
+}
+
+impl ExactSizeIterator for SequentialSamplerIter {}
