@@ -1,0 +1,17 @@
+[package]
+name = "torchforge-data-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+torchforge-data = { path = ".." }
+tempfile = "3.0"
+
+[[bin]]
+name = "mmap_fuzz"
+path = "fuzz_targets/mmap_fuzz.rs"

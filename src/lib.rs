@@ -18,7 +18,7 @@ pub mod loader;
 pub mod sampler;
 
 // Re-export main types for convenience
-pub use dataset::Dataset;
 pub use error::{DataError, Result};
-pub use loader::{DataLoader, LoaderConfig};
+pub use dataset::{Dataset, MmapDataset};
 pub use sampler::Sampler;
+pub use loader::{DataLoader, LoaderConfig};

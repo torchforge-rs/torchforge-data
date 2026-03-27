@@ -124,7 +124,7 @@
 - [x] `#![deny(missing_docs)]` enforced from v0.1.0 — all public items documented as they are written
 - [x] `proptest` in `[dev-dependencies]` for property-based testing
 - [x] `criterion` in `[dev-dependencies]` for micro-benchmarks, create `benches/` directory
-- [ ] `cargo-fuzz` target for `MmapDataset` file parsing (malformed files, truncated files, corrupt index)
+- [x] `cargo-fuzz` target for `MmapDataset` file parsing (malformed files, truncated files, corrupt index)
 
 ### Traits & Core Types
 - [x] Define `Dataset` trait with GAT-based `Item<'a>` for zero-copy returns
