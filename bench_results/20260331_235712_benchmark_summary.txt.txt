@@ -1,0 +1,6 @@
+Rayon Degradation Benchmarks - 20260331_235712
+Hardware: Intel Core i7-8650U @ 1.90GHz (4 cores, 8 threads)
+Memory: 11GB total
+Build: Optimized release build
+Reports saved to: bench_results/reports/20260331_235712/
+All benchmarks completed successfully.

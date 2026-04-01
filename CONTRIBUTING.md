@@ -69,6 +69,27 @@ We use `clippy` for linting:
 cargo clippy -- -D warnings
 ```
 
+### Benchmarking
+
+This project uses comprehensive benchmarking to track performance, especially for rayon parallel loading. See [BENCHMARKS.md](BENCHMARKS.md) for detailed instructions on:
+
+- Running benchmarks properly
+- Understanding benchmark results
+- Finding saved benchmark outputs
+- Performance best practices
+
+Quick benchmark commands:
+```bash
+# Run all benchmarks
+cargo bench --bench rayon_degradation
+
+# Run specific benchmark groups
+cargo bench --bench rayon_degradation parallel_vs_sequential
+cargo bench --bench rayon_degradation single_core_degradation
+```
+
+All benchmark results are automatically saved to `bench_results/` with timestamps and hardware information for reproducibility.
+
 ## Pull Request Process
 
 1. Update the CHANGELOG.md with your changes

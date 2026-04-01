@@ -60,6 +60,13 @@ pub struct DataLoader<D: Dataset, S: Sampler> {
 **Decided**: Generic over `Sampler` for monomorphization — no vtable overhead on edge hardware. In-order ARM cores without branch prediction pay a disproportionate cost for vtable indirection. Users who need runtime sampler swapping can use `Box<dyn Sampler>` as the type parameter.
 
 **Parallelism model**: `rayon` for CPU-parallel item loading. Not `tokio` at this layer — item loading is CPU-bound (deserialization, transforms), not I/O-bound.
+
+**Single-core degradation requirement**: Rayon parallelism must degrade gracefully on single-core targets (≤10% overhead vs. sequential). Verification strategy documented in `tests/rayon_degradation.rs` with 4-phase testing approach:
+1. Unit & property tests (correctness invariants) - implemented pre-rayon
+2. Single-core degradation tests (no panics/hangs) - to be implemented with rayon
+3. Benchmark suite (throughput/latency across core counts) - to be implemented with rayon
+4. Target hardware verification (actual ARM single-core boards) - optional
+
 **[OPEN]**: For network-streamed datasets (S3, NFS), async I/O via `tokio` may be needed. This is a separate `AsyncDataLoader` variant, not the default path. Design deferred to v0.5.0.
 
 **[OPEN]**: Prefetch buffer design. The following questions must be answered before implementing prefetch (v0.2.0):

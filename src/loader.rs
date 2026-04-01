@@ -6,6 +6,7 @@
 use crate::dataset::Dataset;
 use crate::error::Result;
 use crate::sampler::{Sampler, UniformSampler};
+use rayon::prelude::*;
 
 /// Configuration for data loading
 ///
@@ -20,11 +21,22 @@ pub struct LoaderConfig {
     pub prefetch: usize,
     /// Random seed for reproducible shuffling
     pub seed: u64,
+    /// Whether to use parallel loading with rayon
+    pub parallel: bool,
+    /// Number of worker threads (0 = use rayon default)
+    pub num_threads: usize,
 }
 
 impl Default for LoaderConfig {
     fn default() -> Self {
-        Self { batch_size: 32, shuffle: true, prefetch: 2, seed: 42 }
+        Self {
+            batch_size: 32,
+            shuffle: true,
+            prefetch: 2,
+            seed: 42,
+            parallel: false, // Default to sequential for compatibility
+            num_threads: 0,  // Use rayon default
+        }
     }
 }
 
@@ -60,6 +72,22 @@ impl LoaderConfig {
     /// Sets the random seed
     pub fn seed(mut self, seed: u64) -> Self {
         self.seed = seed;
+        self
+    }
+
+    /// Sets whether to use parallel loading
+    pub fn parallel(mut self, parallel: bool) -> Self {
+        self.parallel = parallel;
+        self
+    }
+
+    /// Sets the number of worker threads for parallel loading
+    ///
+    /// # Arguments
+    ///
+    /// * `num_threads` - Number of threads (0 = use rayon default)
+    pub fn num_threads(mut self, num_threads: usize) -> Self {
+        self.num_threads = num_threads;
         self
     }
 }
@@ -108,11 +136,15 @@ impl<D: Dataset, S: Sampler> DataLoader<D, S> {
         Self { dataset, sampler, config }
     }
 
-    /// Returns an iterator over batches
+    /// Returns an iterator over collated batches
+    ///
+    /// This iterator collates individual items into batched arrays. For now,
+    /// this is implemented for common primitive types. Future versions will
+    /// support more flexible collation.
     ///
     /// # Errors
     ///
-    /// Returns an error if the dataset length cannot be determined
+    /// Returns an error if the dataset length cannot be determined or collation fails
     pub fn iter(&self) -> Result<DataLoaderIter<'_, D, S>> {
         let len = self.dataset.len()?;
         Ok(DataLoaderIter {
@@ -134,6 +166,9 @@ impl<D: Dataset, S: Sampler> DataLoader<D, S> {
     pub fn iter_collated_f32(&self) -> Result<impl Iterator<Item = Result<Vec<f32>>> + '_>
     where
         for<'a> D::Item<'a>: AsRef<[u8]>,
+        for<'b> D::Item<'b>: Send, // Required for rayon parallelization
+        D: Sync,
+        S: Sync, // Required for rayon parallelization
     {
         let len = self.dataset.len()?;
         Ok(CollatedF32Iter {
@@ -153,6 +188,9 @@ impl<D: Dataset, S: Sampler> DataLoader<D, S> {
     pub fn iter_collated_i64(&self) -> Result<impl Iterator<Item = Result<Vec<i64>>> + '_>
     where
         for<'a> D::Item<'a>: AsRef<[u8]>,
+        for<'b> D::Item<'b>: Send, // Required for rayon parallelization
+        D: Sync,
+        S: Sync, // Required for rayon parallelization
     {
         let len = self.dataset.len()?;
         Ok(CollatedI64Iter {
@@ -177,7 +215,10 @@ pub struct DataLoaderIter<'a, D: Dataset, S: Sampler> {
     current_batch: Vec<usize>,
 }
 
-impl<'a, D: Dataset, S: Sampler> Iterator for DataLoaderIter<'a, D, S> {
+impl<'a, D: Dataset + Sync, S: Sampler + Sync> Iterator for DataLoaderIter<'a, D, S>
+where
+    for<'b> D::Item<'b>: Send, // Required for rayon parallelization
+{
     type Item = Result<Vec<D::Item<'a>>>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -198,10 +239,28 @@ impl<'a, D: Dataset, S: Sampler> Iterator for DataLoaderIter<'a, D, S> {
 
         // Collect the actual data items
         let mut batch = Vec::with_capacity(self.current_batch.len());
-        for &index in &self.current_batch {
-            match self.loader.dataset.get(index) {
-                Ok(item) => batch.push(item),
-                Err(e) => return Some(Err(e)),
+
+        if self.loader.config.parallel {
+            // Parallel loading using rayon
+            let results: Vec<Result<D::Item<'a>>> = self
+                .current_batch
+                .par_iter()
+                .map(|&index| self.loader.dataset.get(index))
+                .collect::<Vec<_>>();
+
+            for result in results {
+                match result {
+                    Ok(item) => batch.push(item),
+                    Err(e) => return Some(Err(e)),
+                }
+            }
+        } else {
+            // Sequential loading (original behavior)
+            for &index in &self.current_batch {
+                match self.loader.dataset.get(index) {
+                    Ok(item) => batch.push(item),
+                    Err(e) => return Some(Err(e)),
+                }
             }
         }
 
@@ -223,9 +282,10 @@ pub struct CollatedF32Iter<'a, D: Dataset, S: Sampler> {
     current_batch: Vec<usize>,
 }
 
-impl<'a, D: Dataset, S: Sampler> Iterator for CollatedF32Iter<'a, D, S>
+impl<'a, D: Dataset + Sync, S: Sampler + Sync> Iterator for CollatedF32Iter<'a, D, S>
 where
     D::Item<'a>: AsRef<[u8]>,
+    for<'b> D::Item<'b>: Send, // Required for rayon parallelization
 {
     type Item = Result<Vec<f32>>;
 
@@ -249,19 +309,47 @@ where
         let mut items = Vec::with_capacity(self.current_batch.len());
         let mut total_len = 0usize;
 
-        for &index in &self.current_batch {
-            match self.loader.dataset.get(index) {
-                Ok(item) => {
-                    let slice = item.as_ref();
-                    if slice.len() % 4 != 0 {
-                        return Some(Err(crate::error::DataError::Format(
-                            "f32 collation requires slice length to be multiple of 4".to_string(),
-                        )));
+        if self.loader.config.parallel {
+            // Parallel loading using rayon
+            let results: Vec<Result<D::Item<'a>>> = self
+                .current_batch
+                .par_iter()
+                .map(|&index| self.loader.dataset.get(index))
+                .collect::<Vec<_>>();
+
+            for result in results {
+                match result {
+                    Ok(item) => {
+                        let slice = item.as_ref();
+                        if slice.len() % 4 != 0 {
+                            return Some(Err(crate::error::DataError::Format(
+                                "f32 collation requires slice length to be multiple of 4"
+                                    .to_string(),
+                            )));
+                        }
+                        total_len += slice.len() / 4;
+                        items.push(item);
                     }
-                    total_len += slice.len() / 4;
-                    items.push(item);
+                    Err(e) => return Some(Err(e)),
                 }
-                Err(e) => return Some(Err(e)),
+            }
+        } else {
+            // Sequential loading (original behavior)
+            for &index in &self.current_batch {
+                match self.loader.dataset.get(index) {
+                    Ok(item) => {
+                        let slice = item.as_ref();
+                        if slice.len() % 4 != 0 {
+                            return Some(Err(crate::error::DataError::Format(
+                                "f32 collation requires slice length to be multiple of 4"
+                                    .to_string(),
+                            )));
+                        }
+                        total_len += slice.len() / 4;
+                        items.push(item);
+                    }
+                    Err(e) => return Some(Err(e)),
+                }
             }
         }
 
@@ -298,9 +386,10 @@ pub struct CollatedI64Iter<'a, D: Dataset, S: Sampler> {
     current_batch: Vec<usize>,
 }
 
-impl<'a, D: Dataset, S: Sampler> Iterator for CollatedI64Iter<'a, D, S>
+impl<'a, D: Dataset + Sync, S: Sampler + Sync> Iterator for CollatedI64Iter<'a, D, S>
 where
     D::Item<'a>: AsRef<[u8]>,
+    for<'b> D::Item<'b>: Send, // Required for rayon parallelization
 {
     type Item = Result<Vec<i64>>;
 
@@ -324,19 +413,47 @@ where
         let mut items = Vec::with_capacity(self.current_batch.len());
         let mut total_len = 0usize;
 
-        for &index in &self.current_batch {
-            match self.loader.dataset.get(index) {
-                Ok(item) => {
-                    let slice = item.as_ref();
-                    if slice.len() % 8 != 0 {
-                        return Some(Err(crate::error::DataError::Format(
-                            "i64 collation requires slice length to be multiple of 8".to_string(),
-                        )));
+        if self.loader.config.parallel {
+            // Parallel loading using rayon
+            let results: Vec<Result<D::Item<'a>>> = self
+                .current_batch
+                .par_iter()
+                .map(|&index| self.loader.dataset.get(index))
+                .collect::<Vec<_>>();
+
+            for result in results {
+                match result {
+                    Ok(item) => {
+                        let slice = item.as_ref();
+                        if slice.len() % 8 != 0 {
+                            return Some(Err(crate::error::DataError::Format(
+                                "i64 collation requires slice length to be multiple of 8"
+                                    .to_string(),
+                            )));
+                        }
+                        total_len += slice.len() / 8;
+                        items.push(item);
                     }
-                    total_len += slice.len() / 8;
-                    items.push(item);
+                    Err(e) => return Some(Err(e)),
                 }
-                Err(e) => return Some(Err(e)),
+            }
+        } else {
+            // Sequential loading (original behavior)
+            for &index in &self.current_batch {
+                match self.loader.dataset.get(index) {
+                    Ok(item) => {
+                        let slice = item.as_ref();
+                        if slice.len() % 8 != 0 {
+                            return Some(Err(crate::error::DataError::Format(
+                                "i64 collation requires slice length to be multiple of 8"
+                                    .to_string(),
+                            )));
+                        }
+                        total_len += slice.len() / 8;
+                        items.push(item);
+                    }
+                    Err(e) => return Some(Err(e)),
+                }
             }
         }
 

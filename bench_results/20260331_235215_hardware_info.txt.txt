@@ -1,0 +1,9 @@
+CPU(s):                               8
+On-line CPU(s) list:                  0-7
+Model name:                           Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
+Thread(s) per core:                   2
+Core(s) per socket:                   4
+NUMA node0 CPU(s):                    0-7
+Mem:            11Gi       2.8Gi       1.6Gi        52Mi       7.5Gi       8.9Gi
+Rust: rustc 1.94.1 (e408947bf 2026-03-25)
+Build: Optimized release build
